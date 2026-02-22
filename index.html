@@ -41,77 +41,79 @@
       font-size: 1rem;
     }
 
-    .keyboard {
+    .piano {
       display: flex;
-      position: relative;
-      background: #222;
-      padding: 15px;
-      border-radius: 15px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      background: #111;
+      padding: 20px 20px 10px 20px;
+      border-radius: 10px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.8);
     }
 
     .white-key {
-      width: 60px;
-      height: 220px;
-      background: linear-gradient(180deg, #fff 0%, #f5f5f5 100%);
-      border: 1px solid #ccc;
-      border-radius: 0 0 8px 8px;
+      width: 50px;
+      height: 200px;
+      background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 50%, #e0e0e0 100%);
+      border: 1px solid #999;
+      border-radius: 0 0 5px 5px;
       cursor: pointer;
       position: relative;
-      transition: all 0.1s;
-      margin: 0 2px;
+      transition: all 0.05s;
+      margin: 0 1px;
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      padding-bottom: 15px;
+      padding-bottom: 10px;
     }
 
     .white-key:hover {
-      background: linear-gradient(180deg, #fff 0%, #e8e8e8 100%);
+      background: linear-gradient(180deg, #fff 0%, #f8f8f8 50%, #f0f0f0 100%);
     }
 
     .white-key:active, .white-key.playing {
-      background: linear-gradient(180deg, #e94560 0%, #c73e54 100%);
-      transform: translateY(5px);
-      box-shadow: 0 0 20px #e94560;
-    }
-
-    .black-key {
-      width: 40px;
-      height: 140px;
-      background: linear-gradient(180deg, #333 0%, #111 100%);
-      position: absolute;
-      z-index: 2;
-      border-radius: 0 0 5px 5px;
-      cursor: pointer;
-      transition: all 0.1s;
-      border: none;
-    }
-
-    .black-key:hover {
-      background: linear-gradient(180deg, #444 0%, #222 100%);
-    }
-
-    .black-key:active, .black-key.playing {
-      background: linear-gradient(180deg, #e94560 0%, #c73e54 100%);
+      background: linear-gradient(180deg, #e94560 0%, #d63d56 50%, #c7354a 100%);
+      transform: translateY(3px);
       box-shadow: 0 0 15px #e94560;
     }
 
-    .key-label {
+    .white-key .key-name {
       color: #666;
+      font-size: 0.8rem;
       font-weight: bold;
-      font-size: 1rem;
     }
 
-    .black-key .key-label {
-      color: #888;
+    .black-key {
+      width: 32px;
+      height: 120px;
+      background: linear-gradient(180deg, #222 0%, #000 100%);
       position: absolute;
-      bottom: 10px;
+      z-index: 10;
+      border-radius: 0 0 4px 4px;
+      cursor: pointer;
+      transition: all 0.05s;
+      border: none;
+      box-shadow: 0 3px 5px rgba(0,0,0,0.5);
+    }
+
+    .black-key:hover {
+      background: linear-gradient(180deg, #333 0%, #111 100%);
+    }
+
+    .black-key:active, .black-key.playing {
+      background: linear-gradient(180deg, #e94560 0%, #c7354a 100%);
+      box-shadow: 0 0 10px #e94560;
+    }
+
+    .black-key .key-name {
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: bold;
+      position: absolute;
+      bottom: 8px;
       left: 50%;
       transform: translateX(-50%);
     }
 
-    .note-playing {
+    .note-display {
       position: fixed;
       top: 20px;
       left: 50%;
@@ -124,9 +126,10 @@
       font-weight: bold;
       opacity: 0;
       transition: opacity 0.2s;
+      z-index: 100;
     }
 
-    .note-playing.show {
+    .note-display.show {
       opacity: 1;
     }
   </style>
@@ -135,36 +138,33 @@
   <h1>🎹 Piano Keyboard</h1>
   <p class="subtitle">Click any key to play!</p>
 
-  <div class="note-playing" id="noteDisplay"></div>
+  <div class="note-display" id="noteDisplay"></div>
 
-  <div class="keyboard" id="keyboard"></div>
+  <div class="piano" id="piano">
+    <!-- White keys: C D E F G A B C -->
+    <button class="white-key" data-note="C" data-octave="4"><span class="key-name">C</span></button>
+    <button class="white-key" data-note="D" data-octave="4"><span class="key-name">D</span></button>
+    <button class="white-key" data-note="E" data-octave="4"><span class="key-name">E</span></button>
+    <button class="white-key" data-note="F" data-octave="4"><span class="key-name">F</span></button>
+    <button class="white-key" data-note="G" data-octave="4"><span class="key-name">G</span></button>
+    <button class="white-key" data-note="A" data-octave="4"><span class="key-name">A</span></button>
+    <button class="white-key" data-note="B" data-octave="4"><span class="key-name">B</span></button>
+    <button class="white-key" data-note="C" data-octave="5"><span class="key-name">C</span></button>
+  </div>
+
+  <!-- Black keys positioned with CSS -->
+  <button class="black-key" data-note="C#" data-octave="4" style="left: 52px;"><span class="key-name">C#</span></button>
+  <button class="black-key" data-note="D#" data-octave="4" style="left: 106px;"><span class="key-name">D#</span></button>
+  <button class="black-key" data-note="F#" data-octave="4" style="left: 266px;"><span class="key-name">F#</span></button>
+  <button class="black-key" data-note="G#" data-octave="4" style="left: 320px;"><span class="key-name">G#</span></button>
+  <button class="black-key" data-note="A#" data-octave="4" style="left: 374px;"><span class="key-name">A#</span></button>
 
   <p class="hint">Tip: Use keys A-S-D-F-G-H-J-K or click with mouse!</p>
 
   <script>
-    const whiteNotes = [
-      { note: 'C', octave: 4, label: 'C', key: 'a' },
-      { note: 'D', octave: 4, label: 'D', key: 's' },
-      { note: 'E', octave: 4, label: 'E', key: 'd' },
-      { note: 'F', octave: 4, label: 'F', key: 'f' },
-      { note: 'G', octave: 4, label: 'G', key: 'g' },
-      { note: 'A', octave: 4, label: 'A', key: 'h' },
-      { note: 'B', octave: 4, label: 'B', key: 'j' },
-      { note: 'C', octave: 5, label: 'C', key: 'k' }
-    ];
-
-    const blackNotes = [
-      { note: 'C#', octave: 4, key: 'w' },
-      { note: 'D#', octave: 4, key: 'e' },
-      { note: 'F#', octave: 4, key: 't' },
-      { note: 'G#', octave: 4, key: 'y' },
-      { note: 'A#', octave: 4, key: 'u' }
-    ];
-
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     
     function playNote(frequency) {
-      // Resume audio context if needed
       if (audioContext.state === 'suspended') {
         audioContext.resume();
       }
@@ -194,63 +194,20 @@
       return a4 * Math.pow(2, semitones / 12);
     }
 
-    const keyboard = document.getElementById('keyboard');
     const noteDisplay = document.getElementById('noteDisplay');
-
-    // Create white keys
-    whiteNotes.forEach((n, i) => {
-      const key = document.createElement('button');
-      key.className = 'white-key';
-      key.dataset.note = n.note;
-      key.dataset.octave = n.octave;
-      key.dataset.index = i;
-      key.innerHTML = `<span class="key-label">${n.label}</span>`;
-      keyboard.appendChild(key);
-    });
-
-    // Create black keys - positioned between white keys
-    const whiteKeyWidth = 64;
-    const blackKeyWidth = 40;
-    const padding = 15;
-    
-    // Black keys go between specific white keys:
-    // C# between C(0) and D(1), D# between D(1) and E(2), etc.
-    const blackKeyPositions = {
-      'C#': 0,  // Between C and D
-      'D#': 1,  // Between D and E
-      'F#': 3,  // Between F and G
-      'G#': 4,  // Between G and A
-      'A#': 5   // Between A and B
-    };
-    
-    blackNotes.forEach(n => {
-      const key = document.createElement('button');
-      key.className = 'black-key';
-      key.dataset.note = n.note;
-      key.dataset.octave = n.octave;
-      const pos = blackKeyPositions[n.note];
-      // Position at center of gap between white keys
-      const leftPos = padding + (pos * whiteKeyWidth) + (whiteKeyWidth / 2) - (blackKeyWidth / 2);
-      key.style.left = `${leftPos}px`;
-      key.innerHTML = `<span class="key-label">${n.note}</span>`;
-      keyboard.appendChild(key);
-    });
 
     function playKey(note, octave, element) {
       const freq = noteToFrequency(note, octave);
       playNote(freq);
       
-      // Visual feedback
       element.classList.add('playing');
       setTimeout(() => element.classList.remove('playing'), 150);
       
-      // Show note name
-      noteDisplay.textContent = `${note}${octave}`;
+      noteDisplay.textContent = note + octave;
       noteDisplay.classList.add('show');
       setTimeout(() => noteDisplay.classList.remove('show'), 300);
     }
 
-    // Add click handlers
     document.querySelectorAll('.white-key, .black-key').forEach(key => {
       key.addEventListener('click', () => {
         const note = key.dataset.note;
@@ -269,40 +226,18 @@
         'g': { note: 'G', octave: 4 },
         'h': { note: 'A', octave: 4 },
         'j': { note: 'B', octave: 4 },
-        'k': { note: 'C', octave: 5 },
-        'w': { note: 'C#', octave: 4 },
-        'e': { note: 'D#', octave: 4 },
-        't': { note: 'F#', octave: 4 },
-        'y': { note: 'G#', octave: 4 },
-        'u': { note: 'A#', octave: 4 }
+        'k': { note: 'C', octave: 5 }
       };
 
       const keyData = keyMap[e.key.toLowerCase()];
       if (keyData) {
-        let keyElement;
-        // Find the right key element
-        if (keyData.note.includes('#')) {
-          // Black key
-          const blackKeys = document.querySelectorAll('.black-key');
-          for (let key of blackKeys) {
-            if (key.dataset.note === keyData.note && key.dataset.octave == keyData.octave) {
-              keyElement = key;
-              break;
-            }
-          }
+        const whiteKeys = document.querySelectorAll('.white-key');
+        const notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C'];
+        const index = notes.indexOf(keyData.note);
+        if (keyData.octave === 5) {
+          playKey('C', 5, whiteKeys[7]);
         } else {
-          // White key
-          const whiteKeys = document.querySelectorAll('.white-key');
-          const notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C'];
-          const index = notes.indexOf(keyData.note);
-          if (keyData.octave === 5) {
-            keyElement = whiteKeys[7];
-          } else {
-            keyElement = whiteKeys[index];
-          }
-        }
-        if (keyElement) {
-          playKey(keyData.note, keyData.octave, keyElement);
+          playKey(keyData.note, 4, whiteKeys[index]);
         }
       }
     });
