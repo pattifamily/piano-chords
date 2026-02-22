@@ -154,11 +154,11 @@
     ];
 
     const blackNotes = [
-      { note: 'C#', octave: 4, position: 1, key: 'w' },
-      { note: 'D#', octave: 4, position: 2, key: 'e' },
-      { note: 'F#', octave: 4, position: 4, key: 't' },
-      { note: 'G#', octave: 4, position: 5, key: 'y' },
-      { note: 'A#', octave: 4, position: 6, key: 'u' }
+      { note: 'C#', octave: 4, key: 'w' },
+      { note: 'D#', octave: 4, key: 'e' },
+      { note: 'F#', octave: 4, key: 't' },
+      { note: 'G#', octave: 4, key: 'y' },
+      { note: 'A#', octave: 4, key: 'u' }
     ];
 
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -198,23 +198,36 @@
     const noteDisplay = document.getElementById('noteDisplay');
 
     // Create white keys
-    whiteNotes.forEach((n) => {
+    whiteNotes.forEach((n, i) => {
       const key = document.createElement('button');
       key.className = 'white-key';
       key.dataset.note = n.note;
       key.dataset.octave = n.octave;
+      key.dataset.index = i;
       key.innerHTML = `<span class="key-label">${n.label}</span>`;
       keyboard.appendChild(key);
     });
 
-    // Create black keys
-    const keyWidth = 64; // 60px + 4px margin
+    // Create black keys - positioned between white keys
+    const whiteKeyWidth = 64;
+    const blackKeyWidth = 40;
+    const padding = 17;
+    
+    const blackKeyPositions = {
+      'C#': 0,  // Between C (0) and D (1)
+      'D#': 1,  // Between D (1) and E (2)
+      'F#': 3,  // Between F (3) and G (4)
+      'G#': 4,  // Between G (4) and A (5)
+      'A#': 5   // Between A (5) and B (6)
+    };
+    
     blackNotes.forEach(n => {
       const key = document.createElement('button');
       key.className = 'black-key';
       key.dataset.note = n.note;
       key.dataset.octave = n.octave;
-      key.style.left = `${15 + n.position * keyWidth + 30}px`;
+      const pos = blackKeyPositions[n.note];
+      key.style.left = `${padding + pos * whiteKeyWidth + whiteKeyWidth/2 - blackKeyWidth/2}px`;
       key.innerHTML = `<span class="key-label">${n.note}</span>`;
       keyboard.appendChild(key);
     });
