@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Piano Chord Player 🎹</title>
+  <title>Cello Chord Player 🎻</title>
   <style>
     * {
       margin: 0;
@@ -13,7 +13,7 @@
 
     body {
       min-height: 100vh;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      background: linear-gradient(135deg, #2d1810 0%, #4a2c1a 50%, #1a0f0a 100%);
       font-family: 'Comic Sans MS', 'Chalkboard', cursive;
       display: flex;
       flex-direction: column;
@@ -22,20 +22,20 @@
     }
 
     h1 {
-      color: #fff;
+      color: #d4a574;
       font-size: 2.5rem;
       margin-bottom: 10px;
-      text-shadow: 0 0 20px #e94560;
+      text-shadow: 0 0 20px #8b5a2b;
     }
 
     .subtitle {
-      color: #aaa;
+      color: #a67c52;
       margin-bottom: 30px;
       font-size: 1.2rem;
     }
 
     .controls {
-      background: rgba(255,255,255,0.1);
+      background: rgba(139, 90, 43, 0.3);
       padding: 20px 40px;
       border-radius: 20px;
       margin-bottom: 30px;
@@ -50,121 +50,168 @@
       font-size: 1.2rem;
       border: none;
       border-radius: 10px;
-      background: #e94560;
-      color: white;
+      background: #8b5a2b;
+      color: #fff;
       cursor: pointer;
       font-family: inherit;
     }
 
     .chord-select:hover {
-      background: #ff6b6b;
+      background: #a67c52;
     }
 
     .info {
-      color: #fff;
+      color: #d4a574;
       font-size: 1.1rem;
       text-align: center;
       margin-bottom: 20px;
     }
 
-    .piano {
-      display: flex;
+    .cello-body {
+      background: linear-gradient(180deg, #5c3d2e 0%, #8b5a2b 30%, #5c3d2e 60%, #3d2817 100%);
+      width: 280px;
+      height: 400px;
+      border-radius: 40% 40% 45% 45%;
       position: relative;
-      background: #222;
-      padding: 15px;
-      border-radius: 15px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      box-shadow: 
+        0 20px 60px rgba(0,0,0,0.6),
+        inset 0 -20px 40px rgba(0,0,0,0.4),
+        inset 0 10px 20px rgba(255,255,255,0.1);
     }
 
-    .key {
-      width: 60px;
-      height: 220px;
-      background: white;
-      border: none;
-      border-radius: 0 0 8px 8px;
-      cursor: pointer;
-      position: relative;
-      transition: all 0.1s;
-      margin: 0 2px;
-    }
-
-    .key:hover {
-      background: #f0f0f0;
-    }
-
-    .key:active, .key.playing {
-      background: #e94560;
-      transform: translateY(5px);
-      box-shadow: 0 0 20px #e94560;
-    }
-
-    .key.black {
-      width: 40px;
-      height: 140px;
-      background: #111;
+    .cello-body::before {
+      content: '';
       position: absolute;
-      top: 15px;
-      z-index: 2;
-      border-radius: 0 0 5px 5px;
-    }
-
-    .key.black:hover {
-      background: #333;
-    }
-
-    .key.black:active, .key.black.playing {
-      background: #e94560;
-    }
-
-    .key-label {
-      position: absolute;
-      bottom: 15px;
+      top: 5%;
       left: 50%;
       transform: translateX(-50%);
-      color: #333;
+      width: 20px;
+      height: 80px;
+      background: linear-gradient(180deg, #2d1810 0%, #4a2c1a 100%);
+      border-radius: 3px;
+    }
+
+    .f-holes {
+      position: absolute;
+      top: 35%;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      padding: 0 30px;
+    }
+
+    .f-hole {
+      width: 12px;
+      height: 60px;
+      border: 3px solid #2d1810;
+      border-radius: 50%;
+      transform: rotate(15deg);
+    }
+
+    .bridge {
+      position: absolute;
+      top: 55%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 15px;
+      background: #d4a574;
+      border-radius: 3px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .strings {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      height: 320px;
+    }
+
+    .string {
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(180deg, #c9a86c 0%, #8b7355 50%, #c9a86c 100%);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.1s;
+      position: relative;
+    }
+
+    .string:hover {
+      background: linear-gradient(180deg, #e0c88a 0%, #a68b6a 50%, #e0c88a 100%);
+      box-shadow: 0 0 15px #c9a86c;
+    }
+
+    .string:active, .string.playing {
+      background: #ffcc66;
+      box-shadow: 0 0 25px #ffcc66;
+    }
+
+    .string::after {
+      content: attr(data-note);
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #d4a574;
       font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .string-label {
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #a67c52;
       font-size: 0.9rem;
     }
 
-    .key.black .key-label {
-      color: white;
-      bottom: 10px;
-    }
-
-    .note-name {
+    .fingerboard {
       position: absolute;
-      top: 10px;
+      top: 0;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: #666;
-    }
-
-    .key.black .note-name {
-      color: #888;
+      width: 35px;
+      height: 280px;
+      background: linear-gradient(90deg, #1a0f0a 0%, #2d1810 50%, #1a0f0a 100%);
+      border-radius: 5px 5px 0 0;
     }
 
     .current-chord {
-      margin-top: 30px;
+      margin-top: 50px;
       padding: 20px 40px;
-      background: rgba(233, 69, 96, 0.2);
+      background: rgba(139, 90, 43, 0.3);
       border-radius: 15px;
-      color: #fff;
+      color: #d4a574;
       font-size: 1.5rem;
       text-align: center;
     }
 
     .hint {
       margin-top: 20px;
-      color: #666;
+      color: #a67c52;
       font-size: 1rem;
+    }
+
+    .cello-scroll {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 25px;
+      height: 70px;
+      background: linear-gradient(180deg, #3d2817 0%, #5c3d2e 100%);
+      border-radius: 50% 50% 20% 20%;
     }
   </style>
 </head>
 <body>
-  <h1>🎹 Piano Chord Player</h1>
-  <p class="subtitle">Click a key to play a chord!</p>
+  <h1>🎻 Cello Chord Player</h1>
+  <p class="subtitle">Click a string to play a chord!</p>
 
   <div class="controls">
     <select class="chord-select" id="chordType">
@@ -176,19 +223,32 @@
     </select>
   </div>
 
-  <p class="info">Pick a chord type above, then click any key!</p>
+  <p class="info">Pick a chord type above, then click any string!</p>
 
-  <div class="piano" id="piano"></div>
-
-  <div class="current-chord" id="currentChord">
-    Click a key to start! 🎵
+  <div class="cello-body">
+    <div class="cello-scroll"></div>
+    <div class="fingerboard"></div>
+    <div class="strings" id="cello">
+      <div class="string" data-note="C" data-index="0"><span class="string-label">1</span></div>
+      <div class="string" data-note="G" data-index="1"><span class="string-label">2</span></div>
+      <div class="string" data-note="D" data-index="2"><span class="string-label">3</span></div>
+      <div class="string" data-note="A" data-index="3"><span class="string-label">4</span></div>
+    </div>
+    <div class="f-holes">
+      <div class="f-hole"></div>
+      <div class="f-hole"></div>
+    </div>
+    <div class="bridge"></div>
   </div>
 
-  <p class="hint">Tip: Try different keys to hear different chords!</p>
+  <div class="current-chord" id="currentChord">
+    Click a string to start! 🎵
+  </div>
+
+  <p class="hint">Tip: Try different strings to hear different chords!</p>
 
   <script>
-    const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-    const octave = 4;
+    const baseNotes = ['C', 'G', 'D', 'A'];
     
     const chordIntervals = {
       major: [0, 4, 7],
@@ -200,24 +260,74 @@
 
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     
-    function playNote(frequency, startTime = 0, duration = 0.5) {
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+    function playCelloNote(frequency, startTime = 0, duration = 1.2) {
+      // Main tone
+      const osc1 = audioContext.createOscillator();
+      const osc2 = audioContext.createOscillator();
+      const osc3 = audioContext.createOscillator();
       
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+      const gain1 = audioContext.createGain();
+      const gain2 = audioContext.createGain();
+      const gain3 = audioContext.createGain();
       
-      oscillator.type = 'sine';
-      oscillator.frequency.value = frequency;
+      // Cello uses sawtooth for richer harmonics
+      osc1.type = 'sawtooth';
+      osc2.type = 'triangle';
+      osc3.type = 'sine';
       
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + startTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + startTime + duration);
+      osc1.frequency.value = frequency;
+      osc2.frequency.value = frequency;
+      osc3.frequency.value = frequency * 2; // Octave up
       
-      oscillator.start(audioContext.currentTime + startTime);
-      oscillator.stop(audioContext.currentTime + startTime + duration);
+      // Add vibrato
+      const vibrato = audioContext.createOscillator();
+      const vibratoGain = audioContext.createGain();
+      vibrato.frequency.value = 5; // 5 Hz vibrato
+      vibratoGain.gain.value = 3;
+      vibrato.connect(vibratoGain);
+      vibratoGain.connect(osc1.frequency);
+      vibratoGain.connect(osc2.frequency);
+      vibrato.start(audioContext.currentTime + startTime);
+      vibrato.stop(audioContext.currentTime + startTime + duration);
+      
+      // Connect oscillators
+      osc1.connect(gain1);
+      osc2.connect(gain2);
+      osc3.connect(gain3);
+      
+      const masterGain = audioContext.createGain();
+      gain1.connect(masterGain);
+      gain2.connect(masterGain);
+      gain3.connect(masterGain);
+      masterGain.connect(audioContext.destination);
+      
+      // Cello envelope: slow attack, long decay
+      const now = audioContext.currentTime + startTime;
+      gain1.gain.setValueAtTime(0, now);
+      gain1.gain.linearRampToValueAtTime(0.25, now + 0.05);
+      gain1.gain.exponentialRampToValueAtTime(0.15, now + 0.3);
+      gain1.gain.exponentialRampToValueAtTime(0.01, now + duration);
+      
+      gain2.gain.setValueAtTime(0, now);
+      gain2.gain.linearRampToValueAtTime(0.15, now + 0.05);
+      gain2.gain.exponentialRampToValueAtTime(0.08, now + 0.3);
+      gain2.gain.exponentialRampToValueAtTime(0.01, now + duration);
+      
+      gain3.gain.setValueAtTime(0, now);
+      gain3.gain.linearRampToValueAtTime(0.08, now + 0.05);
+      gain3.gain.exponentialRampToValueAtTime(0.04, now + 0.2);
+      gain3.gain.exponentialRampToValueAtTime(0.01, now + duration);
+      
+      osc1.start(now);
+      osc2.start(now);
+      osc3.start(now);
+      osc1.stop(now + duration);
+      osc2.stop(now + duration);
+      osc3.stop(now + duration);
     }
 
-    function noteToFrequency(note, octave) {
+    function noteToFrequency(note, octave = 3) {
+      const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
       const noteIndex = notes.indexOf(note);
       const a4 = 440;
       const semitones = (octave - 4) * 12 + noteIndex - 9;
@@ -225,6 +335,7 @@
     }
 
     function getChordNotes(rootNote, chordType) {
+      const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
       const rootIndex = notes.indexOf(rootNote);
       const intervals = chordIntervals[chordType];
       
@@ -233,86 +344,45 @@
         const octaveOffset = Math.floor((rootIndex + interval) / 12);
         return {
           note: notes[noteIndex],
-          octave: octave + octaveOffset
+          octave: 3 + octaveOffset
         };
       });
     }
 
-    const piano = document.getElementById('piano');
     const chordTypeSelect = document.getElementById('chordType');
     const currentChordDisplay = document.getElementById('currentChord');
 
-    // Create white keys
-    const whiteKeyNotes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-    const blackKeyPositions = {
-      'C#': 0,
-      'D#': 1,
-      'F#': 3,
-      'G#': 4,
-      'A#': 5
-    };
-
-    let keyElements = [];
-
-    // Create white keys
-    whiteKeyNotes.forEach((note, i) => {
-      const key = document.createElement('button');
-      key.className = 'key';
-      key.dataset.note = note;
-      key.innerHTML = `<span class="note-name">${note}</span><span class="key-label">${i + 1}</span>`;
-      piano.appendChild(key);
-      keyElements.push({ element: key, note, isBlack: false });
-    });
-
-    // Create black keys
-    Object.entries(blackKeyPositions).forEach(([note, position]) => {
-      const key = document.createElement('button');
-      key.className = 'key black';
-      key.dataset.note = note;
-      key.style.left = `${15 + position * 64 + 40}px`;
-      key.innerHTML = `<span class="note-name">${note}</span>`;
-      piano.appendChild(key);
-      keyElements.push({ element: key, note, isBlack: true });
-    });
-
-    // Sort by position
-    keyElements.sort((a, b) => {
-      const aRect = a.element.getBoundingClientRect();
-      const bRect = b.element.getBoundingClientRect();
-      return aRect.left - bRect.left;
-    });
-
-    function playChord(note, chordType) {
+    function playChord(rootNote, chordType) {
       // Resume audio context if needed
       if (audioContext.state === 'suspended') {
         audioContext.resume();
       }
 
-      const chordNotes = getChordNotes(note, chordType);
+      const chordNotes = getChordNotes(rootNote, chordType);
       
-      // Play each note in the chord with a slight stagger
+      // Play each note in the chord
       chordNotes.forEach((chordNote, i) => {
         const freq = noteToFrequency(chordNote.note, chordNote.octave);
-        playNote(freq, i * 0.05, 1.5);
+        playCelloNote(freq, i * 0.1, 1.5);
       });
 
       // Update display
-      const chordName = `${note} ${chordType}`;
+      const chordName = `${rootNote} ${chordType}`;
       const noteNames = chordNotes.map(n => n.note).join(' - ');
       currentChordDisplay.innerHTML = `🎵 <strong>${chordName}</strong><br><small>${noteNames}</small>`;
 
       // Add visual feedback
-      const rootKey = document.querySelector(`.key[data-note="${note}"]`);
-      if (rootKey) {
-        rootKey.classList.add('playing');
-        setTimeout(() => rootKey.classList.remove('playing'), 300);
+      const stringEl = document.querySelector(`.string[data-note="${rootNote}"]`);
+      if (stringEl) {
+        stringEl.classList.add('playing');
+        setTimeout(() => stringEl.classList.remove('playing'), 400);
       }
     }
 
     // Add click handlers
-    document.querySelectorAll('.key').forEach(key => {
-      key.addEventListener('click', () => {
-        const note = key.dataset.note;
+    document.querySelectorAll('.string').forEach(string => {
+      string.addEventListener('click', () => {
+        const note = string.dataset.note;
         const chordType = chordTypeSelect.value;
         playChord(note, chordType);
       });
