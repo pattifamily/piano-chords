@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Piano Chord Player 🎹</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      font-family: 'Comic Sans MS', 'Chalkboard', cursive;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #fff;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px #e94560;
+    }
+
+    .subtitle {
+      color: #aaa;
+      margin-bottom: 30px;
+      font-size: 1.2rem;
+    }
+
+    .controls {
+      background: rgba(255,255,255,0.1);
+      padding: 20px 40px;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .chord-select {
+      padding: 15px 25px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      background: #e94560;
+      color: white;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .chord-select:hover {
+      background: #ff6b6b;
+    }
+
+    .info {
+      color: #fff;
+      font-size: 1.1rem;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .piano {
+      display: flex;
+      position: relative;
+      background: #222;
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    .key {
+      width: 60px;
+      height: 220px;
+      background: white;
+      border: none;
+      border-radius: 0 0 8px 8px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.1s;
+      margin: 0 2px;
+    }
+
+    .key:hover {
+      background: #f0f0f0;
+    }
+
+    .key:active, .key.playing {
+      background: #e94560;
+      transform: translateY(5px);
+      box-shadow: 0 0 20px #e94560;
+    }
+
+    .key.black {
+      width: 40px;
+      height: 140px;
+      background: #111;
+      position: absolute;
+      top: 15px;
+      z-index: 2;
+      border-radius: 0 0 5px 5px;
+    }
+
+    .key.black:hover {
+      background: #333;
+    }
+
+    .key.black:active, .key.black.playing {
+      background: #e94560;
+    }
+
+    .key-label {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #333;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .key.black .key-label {
+      color: white;
+      bottom: 10px;
+    }
+
+    .note-name {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #666;
+    }
+
+    .key.black .note-name {
+      color: #888;
+    }
+
+    .current-chord {
+      margin-top: 30px;
+      padding: 20px 40px;
+      background: rgba(233, 69, 96, 0.2);
+      border-radius: 15px;
+      color: #fff;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    .hint {
+      margin-top: 20px;
+      color: #666;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎹 Piano Chord Player</h1>
+  <p class="subtitle">Click a key to play a chord!</p>
+
+  <div class="controls">
+    <select class="chord-select" id="chordType">
+      <option value="major">Major Chord</option>
+      <option value="minor">Minor Chord</option>
+      <option value="7">7 Chord</option>
+      <option value="maj7">Major 7 Chord</option>
+      <option value="minor7">Minor 7 Chord</option>
+    </select>
+  </div>
+
+  <p class="info">Pick a chord type above, then click any key!</p>
+
+  <div class="piano" id="piano"></div>
+
+  <div class="current-chord" id="currentChord">
+    Click a key to start! 🎵
+  </div>
+
+  <p class="hint">Tip: Try different keys to hear different chords!</p>
+
+  <script>
+    const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const octave = 4;
+    
+    const chordIntervals = {
+      major: [0, 4, 7],
+      minor: [0, 3, 7],
+      '7': [0, 4, 7, 10],
+      maj7: [0, 4, 7, 11],
+      minor7: [0, 3, 7, 10]
+    };
+
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+    function playNote(frequency, startTime = 0, duration = 0.5) {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.value = frequency;
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + startTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + startTime + duration);
+      
+      oscillator.start(audioContext.currentTime + startTime);
+      oscillator.stop(audioContext.currentTime + startTime + duration);
+    }
+
+    function noteToFrequency(note, octave) {
+      const noteIndex = notes.indexOf(note);
+      const a4 = 440;
+      const semitones = (octave - 4) * 12 + noteIndex - 9;
+      return a4 * Math.pow(2, semitones / 12);
+    }
+
+    function getChordNotes(rootNote, chordType) {
+      const rootIndex = notes.indexOf(rootNote);
+      const intervals = chordIntervals[chordType];
+      
+      return intervals.map(interval => {
+        const noteIndex = (rootIndex + interval) % 12;
+        const octaveOffset = Math.floor((rootIndex + interval) / 12);
+        return {
+          note: notes[noteIndex],
+          octave: octave + octaveOffset
+        };
+      });
+    }
+
+    const piano = document.getElementById('piano');
+    const chordTypeSelect = document.getElementById('chordType');
+    const currentChordDisplay = document.getElementById('currentChord');
+
+    // Create white keys
+    const whiteKeyNotes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+    const blackKeyPositions = {
+      'C#': 0,
+      'D#': 1,
+      'F#': 3,
+      'G#': 4,
+      'A#': 5
+    };
+
+    let keyElements = [];
+
+    // Create white keys
+    whiteKeyNotes.forEach((note, i) => {
+      const key = document.createElement('button');
+      key.className = 'key';
+      key.dataset.note = note;
+      key.innerHTML = `<span class="note-name">${note}</span><span class="key-label">${i + 1}</span>`;
+      piano.appendChild(key);
+      keyElements.push({ element: key, note, isBlack: false });
+    });
+
+    // Create black keys
+    Object.entries(blackKeyPositions).forEach(([note, position]) => {
+      const key = document.createElement('button');
+      key.className = 'key black';
+      key.dataset.note = note;
+      key.style.left = `${15 + position * 64 + 40}px`;
+      key.innerHTML = `<span class="note-name">${note}</span>`;
+      piano.appendChild(key);
+      keyElements.push({ element: key, note, isBlack: true });
+    });
+
+    // Sort by position
+    keyElements.sort((a, b) => {
+      const aRect = a.element.getBoundingClientRect();
+      const bRect = b.element.getBoundingClientRect();
+      return aRect.left - bRect.left;
+    });
+
+    function playChord(note, chordType) {
+      // Resume audio context if needed
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+
+      const chordNotes = getChordNotes(note, chordType);
+      
+      // Play each note in the chord with a slight stagger
+      chordNotes.forEach((chordNote, i) => {
+        const freq = noteToFrequency(chordNote.note, chordNote.octave);
+        playNote(freq, i * 0.05, 1.5);
+      });
+
+      // Update display
+      const chordName = `${note} ${chordType}`;
+      const noteNames = chordNotes.map(n => n.note).join(' - ');
+      currentChordDisplay.innerHTML = `🎵 <strong>${chordName}</strong><br><small>${noteNames}</small>`;
+
+      // Add visual feedback
+      const rootKey = document.querySelector(`.key[data-note="${note}"]`);
+      if (rootKey) {
+        rootKey.classList.add('playing');
+        setTimeout(() => rootKey.classList.remove('playing'), 300);
+      }
+    }
+
+    // Add click handlers
+    document.querySelectorAll('.key').forEach(key => {
+      key.addEventListener('click', () => {
+        const note = key.dataset.note;
+        const chordType = chordTypeSelect.value;
+        playChord(note, chordType);
+      });
+    });
+  </script>
+</body>
+</html>
